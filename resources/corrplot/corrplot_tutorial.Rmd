@@ -1,0 +1,61 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+![](./banner.jpg)
+
+# Visualizing Correlation with **corrplot**. 
+
+####In exploratory data analysis you might want to visualize the the correlation between many different variables. How can we visualize them quickly?
+
+1. We generate a correlation matrix with **cor()**. 
+2. Use **corrplot()** to generate a quick visualization of the correlation matrix. 
+3. Optional: Tweak plots using **type**, **.mixed**, **order**, and **sig.level** (significance test). 
+
+<br>
+
+```{r}
+library(ggplot2)
+data <- mpg[c("displ", "cyl", "year", "cty", "hwy")]
+corr_matrix <- cor(data)
+print(corr_matrix)
+```
+
+####As you see, this simple correlation matrix is pretty hard to read and not great for presentations. **corrplot()** to the rescue.
+
+<br>
+
+
+```{r}
+library(corrplot)
+layout(matrix(c(1,2,3,4), 2, 2, byrow = TRUE))
+corrplot(corr_matrix)
+corrplot(corr_matrix, tl.col = "black", method="square")
+corrplot(corr_matrix, tl.col = "blue", method="ellipse")
+corrplot(corr_matrix, tl.col = "green", method="number")
+```
+<br>
+
+####Pretty good! You can stop here, or you can add a bit more with additional options as well as indicating whether the correlation has a certain significance level. 
+
+<br>
+
+```{r}
+layout(matrix(c(1,2,3,4), 2, 2, byrow = TRUE))
+corrplot(corr_matrix, tl.col = "black", type="upper")
+corrplot.mixed(corr_matrix, lower="number", tl.col = "black", upper="ellipse")
+corrplot(corr_matrix, tl.col = "black", order="alphabet")
+
+p_values <- cor.mtest(data, conf.level=0.99)$p
+corrplot(corr_matrix, tl.col = "black", p.mat = p_values, sig.level = 0.01)
+```
+
+The options for order are "AOE", "FPC", "hclust", and "alphabet". 
+
+1) "AOE" is the angular order of eigenvectors. 
+2) "FPC" is first principle component order (remember applied machine learning? :D )
+3) "hclust" is hierarchical. 
+4) "alphabet" is alphabetical order. 
